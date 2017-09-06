@@ -37,37 +37,32 @@ static void help()
 }
 
 void _extract_keypoints_and_matches_surf ( const Mat& im1_gray, const Mat& im2_gray,
-    vector<KeyPoint>& keypoints1, vector<KeyPoint>& keypoints2, vector<DMatch>& matches );
+        vector<KeyPoint>& keypoints1, vector<KeyPoint>& keypoints2, vector<DMatch>& matches );
 void _match_with_knnMatch_cuda ( const Ptr<cuda::DescriptorMatcher>& matcher, const GpuMat& des1, const GpuMat& des2,
-    vector<DMatch>& matches, float minRatio = 0.7 );
+                                 vector<DMatch>& matches, float minRatio = 0.7 );
 void _match_with_NORM_HAMMING_cuda ( const Ptr<cuda::DescriptorMatcher>& matcher, const GpuMat& des1, const GpuMat& des2, vector<DMatch>& matches, double threshold_dis = 30.0 );
 void _extract_keypoints_and_matches_orb ( const Mat& im1_gray, const Mat& im2_gray,
-    vector<KeyPoint>& keypoints1, vector<KeyPoint>& keypoints2, vector<DMatch>& matches, const int nfeatures = 1000 );
+        vector<KeyPoint>& keypoints1, vector<KeyPoint>& keypoints2, vector<DMatch>& matches, const int nfeatures = 1000 );
 
 int main(int argc, char* argv[])
 {
-    if (argc != 5)
-    {
+    if (argc != 5) {
         help();
         return -1;
     }
 
     Mat im1_color, im2_color;
 
-    for ( int i = 1; i < argc; ++i )
-    {
-        if ( string ( argv[i] ) == "--left" )
-        {
+    for ( int i = 1; i < argc; ++i ) {
+        if ( string ( argv[i] ) == "--left" ) {
             im1_color = imread ( argv[++i]);
             CV_Assert ( !im1_color.empty () );
         }
-        else if ( string ( argv[i] ) == "--right" )
-        {
+        else if ( string ( argv[i] ) == "--right" ) {
             im2_color = imread ( argv[++i] );
             CV_Assert ( !im2_color.empty () );
         }
-        else if ( string ( argv[i] ) == "--help" )
-        {
+        else if ( string ( argv[i] ) == "--help" ) {
             help ();
             return -1;
         }
@@ -78,7 +73,7 @@ int main(int argc, char* argv[])
     Mat im1_gray, im2_gray;
     cvtColor ( im1_color, im1_gray, CV_BGR2GRAY );
     cvtColor ( im2_color, im2_gray, CV_BGR2GRAY );
-    
+
     vector<KeyPoint> kpts1, kpts2;
     vector<DMatch> matches;
 
@@ -90,7 +85,7 @@ int main(int argc, char* argv[])
     Mat img_matches;
     drawMatches(Mat(im1_color), kpts1, Mat(im2_color), kpts2, matches, img_matches);
 
-    
+
     namedWindow ( "matches", WINDOW_NORMAL ); // avoid too large to show
     imshow("matches", img_matches);
     waitKey(0);
@@ -101,7 +96,7 @@ int main(int argc, char* argv[])
 }
 
 void _extract_keypoints_and_matches_surf ( const Mat& im1_gray, const Mat& im2_gray,
-    vector<KeyPoint>& keypoints1, vector<KeyPoint>& keypoints2, vector<DMatch>& matches)
+        vector<KeyPoint>& keypoints1, vector<KeyPoint>& keypoints2, vector<DMatch>& matches)
 {
     // Should add assert for gray images
 
@@ -124,8 +119,8 @@ void _extract_keypoints_and_matches_surf ( const Mat& im1_gray, const Mat& im2_g
     // Ptr<cv::cuda::DescriptorMatcher> matcher = cv::cuda::DescriptorMatcher::createBFMatcher ( surf.defaultNorm () );
     // cout << "Norm, surf:" << surf.defaultNorm () << ", NORM_L2:" << NORM_L2 << endl;
     Ptr<cv::cuda::DescriptorMatcher> matcher = cv::cuda::DescriptorMatcher::createBFMatcher ( NORM_L2 );
-    
-    
+
+
     _match_with_knnMatch_cuda ( matcher, descriptors1GPU, descriptors2GPU, matches );
 
 
@@ -140,7 +135,7 @@ void _extract_keypoints_and_matches_surf ( const Mat& im1_gray, const Mat& im2_g
 
 
 void _extract_keypoints_and_matches_orb ( const Mat& im1_gray, const Mat& im2_gray,
-    vector<KeyPoint>& keypoints1, vector<KeyPoint>& keypoints2, vector<DMatch>& matches, const int nfeatures )
+        vector<KeyPoint>& keypoints1, vector<KeyPoint>& keypoints2, vector<DMatch>& matches, const int nfeatures )
 {
     // Should add assert for gray images
 
@@ -157,7 +152,7 @@ void _extract_keypoints_and_matches_orb ( const Mat& im1_gray, const Mat& im2_gr
 
     orb->detectAndComputeAsync ( img1, noArray (), keypoints1GPU, descriptors1GPU );
     orb->detectAndComputeAsync ( img2, noArray (), keypoints2GPU, descriptors2GPU );
-    
+
     cout << "FOUND " << keypoints1GPU.cols << " keypoints on first image" << endl;
     cout << "FOUND " << keypoints2GPU.cols << " keypoints on second image" << endl;
 
@@ -171,7 +166,7 @@ void _extract_keypoints_and_matches_orb ( const Mat& im1_gray, const Mat& im2_gr
 
 
 void _match_with_knnMatch_cuda ( const Ptr<cuda::DescriptorMatcher>& matcher, const GpuMat& des1, const GpuMat& des2,
-    vector<DMatch>& matches, float minRatio)
+                                 vector<DMatch>& matches, float minRatio)
 {
     matches.clear ();
 
@@ -201,11 +196,10 @@ void _match_with_NORM_HAMMING_cuda ( const Ptr<cuda::DescriptorMatcher>& matcher
     matcher->match ( des1, des2, all_matches );
 
     double min_dist = 10000, max_dist = 0;
-    
-    
+
+
     //找出所有匹配之间的最小距离和最大距离, 即是最相似的和最不相似的两组点之间的距离
-    for ( int i = 0; i < all_matches.size (); i++ )
-    {
+    for ( int i = 0; i < all_matches.size (); i++ ) {
         double dist = all_matches[i].distance;
         if ( dist < min_dist ) min_dist = dist;
         if ( dist > max_dist ) max_dist = dist;
@@ -215,10 +209,8 @@ void _match_with_NORM_HAMMING_cuda ( const Ptr<cuda::DescriptorMatcher>& matcher
     cout << ". Min dist:" << min_dist << endl;
 
     //当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限.
-    for ( int i = 0; i < all_matches.size (); i++ )
-    {
-        if ( all_matches[i].distance <= max ( 2 * min_dist, threshold_dis ) )
-        {
+    for ( int i = 0; i < all_matches.size (); i++ ) {
+        if ( all_matches[i].distance <= max ( 2 * min_dist, threshold_dis ) ) {
             matches.push_back ( all_matches[i] );
         }
     }
@@ -230,8 +222,8 @@ void _match_with_NORM_HAMMING_cuda ( const Ptr<cuda::DescriptorMatcher>& matcher
 
 /**
  * \brief Sort matches, copy from [offical code matchmethod_orb_akaze_brisk](https://github.com/opencv/opencv/blob/master/samples/cpp/matchmethod_orb_akaze_brisk.cpp)
- * \param matches 
- * \param matches_sorted 
+ * \param matches
+ * \param matches_sorted
  */
 void _sort_matches(const vector<DMatch> matches, vector<DMatch> matches_sorted)
 {
@@ -241,14 +233,12 @@ void _sort_matches(const vector<DMatch> matches, vector<DMatch> matches_sorted)
     Mat index;
     int nbMatch = int ( matches.size () );
     Mat tab ( nbMatch, 1, CV_32F );
-    for ( int i = 0; i<nbMatch; i++ )
-    {
+    for ( int i = 0; i<nbMatch; i++ ) {
         tab.at<float> ( i, 0 ) = matches[i].distance;
     }
     sortIdx ( tab, index, SORT_EVERY_COLUMN + SORT_ASCENDING );
-   
-    for ( int i = 0; i<nbMatch; i++ )
-    {
+
+    for ( int i = 0; i<nbMatch; i++ ) {
         matches_sorted.push_back ( matches[index.at<int> ( i, 0 )] );
     }
 }

@@ -22,27 +22,22 @@ static void help()
 
 int main(int argc, char* argv[])
 {
-    if (argc != 5)
-    {
+    if (argc != 5) {
         help();
         return -1;
     }
 
     GpuMat img1, img2;
-    for (int i = 1; i < argc; ++i)
-    {
-        if (string(argv[i]) == "--left")
-        {
+    for (int i = 1; i < argc; ++i) {
+        if (string(argv[i]) == "--left") {
             img1.upload(imread(argv[++i], IMREAD_GRAYSCALE));
             CV_Assert(!img1.empty());
         }
-        else if (string(argv[i]) == "--right")
-        {
+        else if (string(argv[i]) == "--right") {
             img2.upload(imread(argv[++i], IMREAD_GRAYSCALE));
             CV_Assert(!img2.empty());
         }
-        else if (string(argv[i]) == "--help")
-        {
+        else if (string(argv[i]) == "--help") {
             help();
             return -1;
         }
