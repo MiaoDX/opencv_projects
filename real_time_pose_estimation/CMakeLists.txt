@@ -1,5 +1,19 @@
-set(sample_dir ${CMAKE_CURRENT_SOURCE_DIR}/tutorial_code/calib3d/real_time_pose_estimation/src/)
+project(real_time_pose_estimation)
+
+cmake_minimum_required(VERSION 2.8)
+
 set(target cpp-tutorial-)
+
+#include( $ENV{OpenCV2_DIR}/OpenCVConfig.cmake )
+#include( $ENV{OpenCV3_DIR}/OpenCVConfig.cmake )
+include( $ENV{OpenCV33_DIR}/OpenCVConfig.cmake )
+add_definitions(-D_CV_VERSION_3) # `#ifdef _CV_VERSION_3`
+
+message(STATUS "OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
+message(STATUS "OpenCV_LIBS: ${OpenCV_LIBS}")
+
+
+set(sample_dir ${CMAKE_SOURCE_DIR}/src/)
 
 set(sample_pnplib
         ${sample_dir}CsvReader.cpp
@@ -12,8 +26,9 @@ set(sample_pnplib
         ${sample_dir}RobustMatcher.cpp
 )
 
+
 add_executable( ${target}pnp_registration ${sample_dir}main_registration.cpp ${sample_pnplib} )
 add_executable( ${target}pnp_detection ${sample_dir}main_detection.cpp ${sample_pnplib} )
 
-ocv_target_link_libraries( ${target}pnp_registration ${OPENCV_LINKER_LIBS} ${OPENCV_CPP_SAMPLES_REQUIRED_DEPS} )
-ocv_target_link_libraries( ${target}pnp_detection ${OPENCV_LINKER_LIBS} ${OPENCV_CPP_SAMPLES_REQUIRED_DEPS} )
+target_link_libraries( ${target}pnp_registration ${OpenCV_LIBS})
+target_link_libraries( ${target}pnp_detection ${OpenCV_LIBS})

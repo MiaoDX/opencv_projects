@@ -21,7 +21,8 @@
 using namespace cv;
 using namespace std;
 
-string tutorial_path = "../../samples/cpp/tutorial_code/calib3d/real_time_pose_estimation/"; // path to tutorial
+//string tutorial_path = "../../samples/cpp/tutorial_code/calib3d/real_time_pose_estimation/"; // path to tutorial
+string tutorial_path = "H:/projects/SLAM/opencv_scripts/real_time_pose_estimation/";
 
 string video_read_path = tutorial_path + "Data/box.mp4";       // recorded video
 string yml_read_path = tutorial_path + "Data/cookies_ORB.yml"; // 3dpts + descriptors

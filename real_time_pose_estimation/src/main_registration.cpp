@@ -18,7 +18,8 @@ using namespace std;
 
 /**  GLOBAL VARIABLES  **/
 
-string tutorial_path = "../../samples/cpp/tutorial_code/calib3d/real_time_pose_estimation/"; // path to tutorial
+//string tutorial_path = "../../samples/cpp/tutorial_code/calib3d/real_time_pose_estimation/"; // path to tutorial
+string tutorial_path = "H:/projects/SLAM/opencv_scripts/real_time_pose_estimation/";
 
 string img_path = tutorial_path + "Data/resized_IMG_3875.JPG";  // image to register
 string ply_read_path = tutorial_path + "Data/box.ply";          // object mesh
