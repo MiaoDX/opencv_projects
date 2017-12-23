@@ -1,3 +1,15 @@
+"""
+There are some coordinate problems as the codes shows
+One explanation is that it is [`Rt The transformation that will be applied to the 3d points computed from the depth`](https://docs.opencv.org/3.3.0/d2/d3a/group__rgbd.html)
+The other possible issue is [In the `depthTo3d` method, The coordinate system is x pointing left, y down and z away from the camera](https://docs.opencv.org/3.3.0/d2/d3a/group__rgbd.html)
+
+These two comments are conflict. E.g. in our normal coordinate, move camera x=40 (move right), we got `40_0_0_0_0_0.png`
+If the Rt is for 3d points, then will be the inverse of camera, so, the t=[-0.4, 0, 0]
+And if the strange coordinate, then together with move 3d points, the t=[0.4, 0, 0]
+
+Result show that the former is right, so we can just ignore the coordinate description.
+"""
+
 import cv2
 import imutils
 import numpy as np
@@ -57,17 +69,19 @@ if __name__ == '__main__':
 
     R3 = np.eye(3)
     # t3 = [40, 0, 15]
-    t3 = [-0.40, 0, 0.0] # the scale is at `meter`, Rt The transformation that will be applied to the 3d points computed from the depth
+    t3 = [-0.4, -0.0, 0.0] # the scale is at `meter`, Rt The transformation that will be applied to the 3d points computed from the depth
 
     Rt3 = Rt44(R3, t3)
 
     K = np.array([[320, 0, 320], [0, 320, 240], [0, 0, 1]]).astype(np.float32)
 
     # warpFrame(image, depth, mask, Rt, cameraMatrix, distCoeff[, warpedImage[, warpedDepth[, warpedMask]]]) -> warpedImage, warpedDepth, warpedMask
-    # warpedImage, warpedDepth, _ = cv2.rgbd.warpFrame(im1, im1_d, None, Rt3, K, None)
+
+
+    # warpedImage, warpedDepth, _ = cv2.rgbd.warpFrame(im1, im1_d, None, Rt2, K, None)
     # cv2.imshow('RGB', warpedImage)
     # cv2.waitKey(0)
 
-    warpedImage, warpedDepth, _ = cv2.rgbd.warpFrame(im1, im1_d, None, Rt2, K, None)
+    warpedImage, warpedDepth, _ = cv2.rgbd.warpFrame(im1, im1_d, None, Rt3, K, None)
     cv2.imshow('RGB', warpedImage)
     cv2.waitKey(0)
