@@ -12,4 +12,6 @@ At last, [`warpFrame()` seems just meet this requirement](https://docs.opencv.or
 
 However, there will be holes in the warped images. And as for the depth image, `registerDepth()` provide similar result (`warpFrame` call it ~underhood~). But it is not exported to python binding -.-
 
+To write it by hand, like described in `registerDepth` of opencv, $uv_{rgb} = K_{rgb} * [R | t] * z * inv(K_{ir}) * uv_{ir}$, we should take consideration of the coordinates, it can be done, but I really wonder why opencv do not have convenient function to handle the coordinate problems, like [`projectPixelTo3dRay` in ROS package `image_geometry`](http://docs.ros.org/jade/api/image_geometry/html/c++/classimage__geometry_1_1PinholeCameraModel.html#ad52a4a71c6f6d375d69865e40a117ca3).
+
 
