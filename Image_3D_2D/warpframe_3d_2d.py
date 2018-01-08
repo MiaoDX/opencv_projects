@@ -57,8 +57,8 @@ def warp_and_subtract(im1_file, im1_d_file, im2_file, im2_d_file, Rt1_to_2_cam):
     # t = [0.478, 0.02, 0.13]
     # Rt = Rt44_inv(R, t)
 
-    # Rt_obj = np.linalg.inv(Rt1_to_2_cam)
-    Rt_obj = Rt1_to_2_cam
+    Rt_obj = np.linalg.inv(Rt1_to_2_cam)
+    # Rt_obj = Rt1_to_2_cam
 
     K = np.array([[320, 0, 320], [0, 320, 240], [0, 0, 1]]).astype(np.float32)
 
